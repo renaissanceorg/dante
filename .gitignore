@@ -1,0 +1,17 @@
+.dub
+docs.json
+__dummy.html
+docs/
+/dante
+dante.so
+dante.dylib
+dante.dll
+dante.a
+dante.lib
+dante-test-*
+*.exe
+*.pdb
+*.o
+*.obj
+*.lst
+dub.selections.json

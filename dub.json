@@ -1,0 +1,13 @@
+{
+	"authors": [
+		"Tristan B. Velloza Kildaire"
+	],
+	"copyright": "Tristan B. Kildaire",
+	"dependencies": {
+		"davinci": "~>0.0.3",
+		"tristanable": "3.1.9-beta"
+	},
+	"description": "Renaissance client library",
+	"license": "LGPL 2",
+	"name": "dante"
+}
