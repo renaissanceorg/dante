@@ -9,5 +9,6 @@
 	},
 	"description": "Renaissance client library",
 	"license": "LGPL 2",
-	"name": "dante"
+	"name": "dante",
+	"targetType": "library"
 }
