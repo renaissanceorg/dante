@@ -6,6 +6,7 @@ import river.impls.sock : SockStream;
 import davinci;
 
 import tristanable;
+import tasky;
 
 public class DanteClient
 {
@@ -15,7 +16,15 @@ public class DanteClient
      */
     private Stream connection;
 
+    /** 
+     * Tristanable manager
+     */
     private Manager manager;
+
+    /** 
+     * Tasky engine
+     */
+    private Engine engine;
 
     // TODO: We do this because maybe lookup DNS rather than Address and then decice
     // ... on whetherto make a TLS stream or not
@@ -52,6 +61,9 @@ public class DanteClient
 
         /* Create a tristanable manager based on this */
         this.manager = new Manager(connection);
+
+        /* Create a tasky engine based on this manager */
+        this.engine = new Engine(this.manager);
     }
 
     public void start()
