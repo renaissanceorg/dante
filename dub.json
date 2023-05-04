@@ -7,6 +7,7 @@
 		"davinci": "~>0.0.3",
 		"gogga": "2.1.18",
 		"river": "~>0.3.7",
+		"tasky": "~>2.1.0",
 		"tristanable": "3.2.0-beta"
 	},
 	"description": "Renaissance client library",
