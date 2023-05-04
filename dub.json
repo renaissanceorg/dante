@@ -7,7 +7,7 @@
 		"davinci": "~>0.0.3",
 		"gogga": "2.1.18",
 		"river": "~>0.3.7",
-		"tristanable": "3.1.9-beta"
+		"tristanable": "3.2.0-beta"
 	},
 	"description": "Renaissance client library",
 	"license": "LGPL 2",
