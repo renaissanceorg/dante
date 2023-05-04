@@ -6,6 +6,8 @@ public class NopRequest : Request
 {
     this()
     {
-        super(cast(byte[])"ABBA");
+        import davinci.c2s.test;
+        TestMessage testMessage = new TestMessage();
+        super(testMessage.encode());
     }
 }

@@ -4,7 +4,7 @@
 	],
 	"copyright": "Tristan B. Kildaire",
 	"dependencies": {
-		"davinci": "~>0.0.3",
+		"davinci": "0.0.4",
 		"gogga": "2.1.18",
 		"river": "~>0.3.7",
 		"tasky": "~>2.1.0",
