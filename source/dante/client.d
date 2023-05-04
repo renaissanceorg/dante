@@ -68,15 +68,7 @@ public class DanteClient
 
     public void start()
     {
-        // TODO: Change this, just for testing
-
-        // TODO: We need to make unique queues each time we send a message
-        // ... it is here we will find out what the tasky library _actually_
-        // ... needs to do and to be
-        Queue myQueue = new Queue(69);
-        manager.registerQueue(myQueue);
-
-        
+        /* Start the tristanable manager */
         manager.start();
     }
 }
