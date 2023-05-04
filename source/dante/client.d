@@ -78,6 +78,12 @@ public class DanteClient
         manager.start();
         version(dbg) { writeln("Dante staretd tristanable manager..."); }
     }
+
+    public void nopRequest()
+    {
+        import dante.types.nop;
+        engine.makeRequest(new NopRequest());
+    }
 }
 
 unittest
