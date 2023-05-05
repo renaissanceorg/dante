@@ -7,7 +7,8 @@ public class NopRequest : Request
     this()
     {
         import davinci.c2s.test;
+        import davinci.base.base;
         TestMessage testMessage = new TestMessage();
-        super(testMessage.getEncoded());
+        super(new BaseMessage(MessageType.CLIENT_TO_SERVER, CommandType.NOP_COMMAND, testMessage).encode());
     }
 }
