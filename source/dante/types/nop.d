@@ -8,6 +8,6 @@ public class NopRequest : Request
     {
         import davinci.c2s.test;
         TestMessage testMessage = new TestMessage();
-        super(testMessage.encode());
+        super(testMessage.getEncoded());
     }
 }
