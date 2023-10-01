@@ -89,7 +89,22 @@ public class DanteClient
         // TODO: Encode message
         // TODO: Send with tristanable
         // TODO: Wrap a tristanable  `dequeue()` in a FutureTask via guillotine and return that
+        Queue uniqueQueue = this.manager.getUniqueQueue();
+
+
+        BaseMessage doRequest()
+        {
+            TaggedMessage message = new TaggedMessage(uniqueQueue.getID(), msg.encode());
+            this.manager.sendMessage(message);
+
+            TaggedMessage response = uniqueQueue.dequeue();
+            return BaseMessage.decode(response.getPayload());
+        }
+
+        this.executor.submitTask!(doRequest);
     }
+
+    
 }
 
 unittest
