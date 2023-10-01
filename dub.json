@@ -5,8 +5,8 @@
 	"copyright": "Tristan B. Kildaire",
 	"dependencies": {
 		"davinci": ">=0.1.2",
-		"gogga": "2.1.18",
-		"river": "~>0.3.7",
+		"gogga": ">=2.1.18",
+		"river": ">=0.3.7",
 		"tasky": "~>2.1.0",
 		"tristanable": ">=4.0.0-beta"
 	},
