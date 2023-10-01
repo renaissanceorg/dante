@@ -78,7 +78,7 @@ public class DanteClient
         version(dbg) { writeln("Dante staretd tristanable manager..."); }
     }
 
-    public void nopRequest()
+    public Future nopRequest()
     {
         import davinci.c2s.test;
         import davinci;
@@ -101,13 +101,29 @@ public class DanteClient
             return BaseMessage.decode(response.getPayload());
         }
 
-        this.executor.submitTask!(doRequest);
+        Future future = this.executor.submitTask!(doRequest);
+
+        return future;
     }
 
     
 }
 
+version(unittest)
+{
+    import std.stdio : writeln;
+}
+
 unittest
 {
-    DanteClient client = new DanteClient(new UnixAddress("/tmp/renaissance2.sock"));
+    DanteClient client = new DanteClient(new UnixAddress("/tmp/renaissance.sock"));
+    client.start();
+
+    Future fut = client.nopRequest();
+
+    writeln("Awaitinf future...");
+    fut.await();
+    writeln("Awaitinf future... [done]");
+
+    while(true){}
 }
