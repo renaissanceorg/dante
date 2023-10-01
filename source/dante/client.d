@@ -80,7 +80,11 @@ public class DanteClient
 
     public void nopRequest()
     {
-        import dante.types.nop;
+        import davinci.c2s.test;
+        import davinci;
+        TestMessage testMessage = new TestMessage();
+        
+        BaseMessage msg = new BaseMessage(MessageType.CLIENT_TO_SERVER, CommandType.NOP_COMMAND, testMessage);
 
         // TODO: Encode message
         // TODO: Send with tristanable
