@@ -6,6 +6,7 @@
 	"dependencies": {
 		"davinci": ">=0.1.2",
 		"gogga": ">=2.1.18",
+		"guillotine": ">=0.2.0-alpha",
 		"river": ">=0.3.7",
 		"tristanable": ">=4.0.0-beta"
 	},
