@@ -7,6 +7,7 @@ import davinci;
 
 import tristanable;
 import guillotine;
+import guillotine.providers.sequential;
 
 version(dbg)
 {
@@ -30,6 +31,7 @@ public class DanteClient
      * Guillotine engine
      */
     private Executor executor;
+    private Provider provider;
 
     // TODO: We do this because maybe lookup DNS rather than Address and then decice
     // ... on whetherto make a TLS stream or not
@@ -67,8 +69,12 @@ public class DanteClient
         /* Create a tristanable manager based on this */
         this.manager = new Manager(connection);
 
+        /* Create a provider (for the executor) and start it */ // TODO: change later to multi-threaded one or something
+        this.provider = new Sequential();
+        this.provider.start();
+
         /* Create a task executor */
-        this.executor = new Executor();
+        this.executor = new Executor(this.provider);
     }
 
     public void start()
@@ -76,6 +82,15 @@ public class DanteClient
         /* Start the tristanable manager */
         manager.start();
         version(dbg) { writeln("Dante staretd tristanable manager..."); }
+    }
+
+    public void stop()
+    {
+        /* Stop the tristanable manager */
+        manager.stop();
+
+        /* Stop the task executor's provider */
+        provider.stop();
     }
 
     public Future nopRequest()
@@ -122,8 +137,9 @@ unittest
     Future fut = client.nopRequest();
 
     writeln("Awaitinf future...");
-    fut.await();
+    Result res = fut.await();
     writeln("Awaitinf future... [done]");
+    writeln("Future result: ", res.getValue().value.object);
 
-    while(true){}
+    client.stop();
 }
