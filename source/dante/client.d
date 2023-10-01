@@ -6,8 +6,7 @@ import river.impls.sock : SockStream;
 import davinci;
 
 import tristanable;
-import tasky;
-
+import guillotine;
 
 version(dbg)
 {
@@ -28,9 +27,9 @@ public class DanteClient
     private Manager manager;
 
     /** 
-     * Tasky engine
+     * Guillotine engine
      */
-    private Engine engine;
+    private Executor executor;
 
     // TODO: We do this because maybe lookup DNS rather than Address and then decice
     // ... on whetherto make a TLS stream or not
@@ -68,8 +67,8 @@ public class DanteClient
         /* Create a tristanable manager based on this */
         this.manager = new Manager(connection);
 
-        /* Create a tasky engine based on this manager */
-        this.engine = new Engine(this.manager);
+        /* Create a task executor */
+        this.executor = new Executor();
     }
 
     public void start()
@@ -82,7 +81,10 @@ public class DanteClient
     public void nopRequest()
     {
         import dante.types.nop;
-        engine.makeRequest(new NopRequest());
+
+        // TODO: Encode message
+        // TODO: Send with tristanable
+        // TODO: Wrap a tristanable  `dequeue()` in a FutureTask via guillotine and return that
     }
 }
 
