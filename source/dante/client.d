@@ -102,9 +102,7 @@ public class DanteClient
         
         BaseMessage msg = new BaseMessage(MessageType.CLIENT_TO_SERVER, CommandType.NOP_COMMAND, testMessage);
 
-        Queue uniqueQueue = this.manager.getUniqueQueue();
-
-        return makeRequest(msg, uniqueQueue);
+        return makeRequest(msg);
     }
 
     /** 
