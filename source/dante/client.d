@@ -97,7 +97,7 @@ public class DanteClient
     {
         import davinci.c2s.test;
         import davinci;
-        TestMessage testMessage = new TestMessage();
+        NopMessage testMessage = new NopMessage();
         
         BaseMessage msg = new BaseMessage(MessageType.CLIENT_TO_SERVER, CommandType.NOP_COMMAND, testMessage);
 
