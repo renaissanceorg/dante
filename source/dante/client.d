@@ -121,7 +121,7 @@ public class DanteClient
         // Obtain a unique queue for this request
         Queue uniqueQueue = this.manager.getUniqueQueue();
 
-        return makeRequest(msg, uniqueQueue);
+        return makeRequest(request, uniqueQueue);
     }
 
     /** 
