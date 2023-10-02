@@ -108,7 +108,10 @@ public class DanteClient
     /** 
      * Makes a request and returns a future which
      * can be awaited on for when the request
-     * is fulfilled server-side
+     * is fulfilled server-side.
+     *
+     * This method automatically manages
+     * the queueing for you.
      *
      * Params:
      *   request = the request message
@@ -119,7 +122,7 @@ public class DanteClient
         // Obtain a unique queue for this request
         Queue uniqueQueue = this.manager.getUniqueQueue();
 
-        return makeRequest(request, uniqueQueue);
+        return makeRequest(request, uniqueQueue, true);
     }
 
     /** 
@@ -127,16 +130,17 @@ public class DanteClient
      * which, we will then return a future which will
      * wait for a reply on the queue provided.
      *
-     * NOTE: This will release the provided queue after
-     * use
-     *
      * Params:
      *   request = the request message
      *   responseQueue = the queue which the future
      * should await a reply from on
+     *   releaseAfterUse = whether or not to automatically
+     * deregister the provided queue after completion. Default
+     * is `false`.
+     * 
      * Returns: a `Future`
      */
-    private Future makeRequest(BaseMessage request, Queue responseQueue)
+    private Future makeRequest(BaseMessage request, Queue responseQueue, bool releaseAfterUse = false)
     {
         BaseMessage doRequest()
         {
@@ -145,9 +149,12 @@ public class DanteClient
 
             TaggedMessage response = responseQueue.dequeue();
 
-            // De-register queue here to prevent resource leak
-            // ... and allow queue id recycling
-            this.manager.releaseQueue(responseQueue);
+            if(releaseAfterUse)
+            {
+                // De-register queue here to prevent resource leak
+                // ... and allow queue id recycling
+                this.manager.releaseQueue(responseQueue);
+            }
 
             return BaseMessage.decode(response.getPayload());
         }
