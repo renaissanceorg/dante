@@ -107,7 +107,7 @@ public class DanteClient
         // TODO: Wrap a tristanable  `dequeue()` in a FutureTask via guillotine and return that
         Queue uniqueQueue = this.manager.getUniqueQueue();
 
-        return makeRequest(msg, uniqueQueue);;
+        return makeRequest(msg, uniqueQueue);
     }
 
 
