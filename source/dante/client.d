@@ -143,6 +143,9 @@ public class DanteClient
             this.manager.sendMessage(message);
 
             TaggedMessage response = responseQueue.dequeue();
+
+            // TODO: De-register queue here (resource leak)
+
             return BaseMessage.decode(response.getPayload());
         }
 
