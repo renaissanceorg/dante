@@ -98,6 +98,7 @@ public class DanteClient
         import davinci.c2s.test;
         import davinci;
         NopMessage testMessage = new NopMessage();
+        testMessage.setTestField("Lekker Boetie");
         
         BaseMessage msg = new BaseMessage(MessageType.CLIENT_TO_SERVER, CommandType.NOP_COMMAND, testMessage);
 
