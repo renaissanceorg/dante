@@ -122,6 +122,34 @@ public class DanteClient
         return future;
     }
 
+
+
+    /** 
+     * Makes a request described by the provided message
+     * which, we will then return a future which will
+     * wait for a reply on the queue provided
+     *
+     * Params:
+     *   request = the request message
+     *   responseQueue = the queue which the future
+     * should await a reply from on
+     * Returns: a `Future`
+     */
+    private Future makeRequest(BaseMessage request, Queue responseQueue)
+    {
+        BaseMessage doRequest()
+        {
+            TaggedMessage message = new TaggedMessage(responseQueue.getID(), request.encode());
+            this.manager.sendMessage(message);
+
+            TaggedMessage response = responseQueue.dequeue();
+            return BaseMessage.decode(response.getPayload());
+        }
+
+        Future future = this.executor.submitTask!(doRequest);
+
+        return future;
+    }
     
 }
 
