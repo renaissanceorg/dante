@@ -81,7 +81,7 @@ public class DanteClient
     {
         /* Start the tristanable manager */
         manager.start();
-        version(dbg) { writeln("Dante staretd tristanable manager..."); }
+        version(dbg) { writeln("Dante started tristanable manager..."); }
     }
 
     public void stop()
