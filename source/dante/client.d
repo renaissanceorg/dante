@@ -102,15 +102,27 @@ public class DanteClient
         
         BaseMessage msg = new BaseMessage(MessageType.CLIENT_TO_SERVER, CommandType.NOP_COMMAND, testMessage);
 
-        // TODO: Encode message
-        // TODO: Send with tristanable
-        // TODO: Wrap a tristanable  `dequeue()` in a FutureTask via guillotine and return that
         Queue uniqueQueue = this.manager.getUniqueQueue();
 
         return makeRequest(msg, uniqueQueue);
     }
 
+    /** 
+     * Makes a request and returns a future which
+     * can be awaited on for when the request
+     * is fulfilled server-side
+     *
+     * Params:
+     *   request = the request message
+     * Returns: a `Future`
+     */
+    private Future makeRequest(BaseMessage request)
+    {
+        // Obtain a unique queue for this request
+        Queue uniqueQueue = this.manager.getUniqueQueue();
 
+        return makeRequest(msg, uniqueQueue);
+    }
 
     /** 
      * Makes a request described by the provided message
