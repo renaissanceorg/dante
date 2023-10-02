@@ -125,7 +125,10 @@ public class DanteClient
     /** 
      * Makes a request described by the provided message
      * which, we will then return a future which will
-     * wait for a reply on the queue provided
+     * wait for a reply on the queue provided.
+     *
+     * NOTE: This will release the provided queue after
+     * use
      *
      * Params:
      *   request = the request message
@@ -142,7 +145,9 @@ public class DanteClient
 
             TaggedMessage response = responseQueue.dequeue();
 
-            // TODO: De-register queue here (resource leak)
+            // De-register queue here to prevent resource leak
+            // ... and allow queue id recycling
+            this.manager.releaseQueue(responseQueue);
 
             return BaseMessage.decode(response.getPayload());
         }
