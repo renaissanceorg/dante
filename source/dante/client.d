@@ -100,6 +100,9 @@ public class DanteClient
         NopMessage testMessage = new NopMessage();
         testMessage.setTestField("Lekker Boetie");
         
+        import std.stdio;
+        writeln(testMessage.getEncoded());
+
         BaseMessage msg = new BaseMessage(MessageType.CLIENT_TO_SERVER, CommandType.NOP_COMMAND, testMessage);
 
         return makeRequest(msg);
@@ -142,9 +145,13 @@ public class DanteClient
      */
     private Future makeRequest(BaseMessage request, Queue responseQueue, bool releaseAfterUse = false)
     {
+        byte[] encoded = request.encode();
+
+        // BUG: If you tried encoding INSIDE of the delegate/closure then runtime probelm with msgpack
+        // ... hence I encode outside and then refer to it inside. TELL MSGPACK people about this!
         BaseMessage doRequest()
         {
-            TaggedMessage message = new TaggedMessage(responseQueue.getID(), request.encode());
+            TaggedMessage message = new TaggedMessage(responseQueue.getID(), encoded);
             this.manager.sendMessage(message);
 
             TaggedMessage response = responseQueue.dequeue();
