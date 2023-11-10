@@ -249,6 +249,11 @@ unittest
     client.stop();
 }
 
+version(unittest)
+{
+    import niknaks.debugging : dumpArray;
+}
+
 unittest
 {
     DanteClient client = new DanteClient(new UnixAddress("/tmp/renaissance.sock"));
@@ -256,7 +261,7 @@ unittest
 
     writeln("Waiting for channels...");
     string[] channels = client.enumerateChannels();
-    writeln("Channels: ", channels);
+    writeln(dumpArray!(channels));
 
     client.stop();
 }
