@@ -99,13 +99,54 @@ public class DanteClient
         import davinci;
         NopMessage testMessage = new NopMessage();
         testMessage.setTestField("Lekker Boetie");
-        
-        import std.stdio;
-        writeln(testMessage.getEncoded());
 
         BaseMessage msg = new BaseMessage(MessageType.CLIENT_TO_SERVER, CommandType.NOP_COMMAND, testMessage);
 
         return makeRequest(msg);
+    }
+
+    public Future authenticate(string username, string password)
+    {
+        import davinci.c2s.auth;
+        import davinci;
+        AuthMessage authMessage = new AuthMessage();
+        authMessage.setUsername(username);
+        authMessage.setPassword(password);
+
+        BaseMessage msg = new BaseMessage(MessageType.CLIENT_TO_SERVER, CommandType.AUTH_COMMAND, authMessage);
+
+        // TODO: We should handle auth here for the user, instead of just returning a future?
+
+        return makeRequest(msg);
+    }
+
+    public Future enumerateChannels_imp(ulong offset, ubyte limit)
+    {
+        import davinci.c2s.channels : ChannelEnumerateRequest;
+        import davinci;
+        ChannelEnumerateRequest chanEnumReq = new ChannelEnumerateRequest();
+        
+
+        BaseMessage msg = new BaseMessage(MessageType.CLIENT_TO_SERVER, CommandType.CHANNELS_ENUMERATE_REQ, chanEnumReq);
+
+        // TODO: We should handle auth here for the user, instead of just returning a future?
+
+        return makeRequest(msg);
+    }
+
+    public string[] enumerateChannels(ulong offset, ubyte limit)
+    {
+        import davinci.c2s.channels : ChannelEnumerateReply;
+        BaseMessage response = cast(BaseMessage)enumerateChannels_imp(offset, limit).await().getValue().value.object;
+
+        ChannelEnumerateReply responseCommand = cast(ChannelEnumerateReply)response.getCommand();
+
+        return responseCommand.getChannels();
+    }
+
+    public string[] enumerateChannels()
+    {
+        return enumerateChannels(0, 0);
     }
 
     /** 
@@ -189,6 +230,33 @@ unittest
     Result res = fut.await();
     writeln("Awaitinf future... [done]");
     writeln("Future result: ", res.getValue().value.object);
+
+    client.stop();
+}
+
+unittest
+{
+    DanteClient client = new DanteClient(new UnixAddress("/tmp/renaissance.sock"));
+    client.start();
+
+    Future fut = client.authenticate("deavmi", "testpassword");
+
+    writeln("Awaitinf future...");
+    Result res = fut.await();
+    writeln("Awaitinf future... [done]");
+    writeln("Future result: ", res.getValue().value.object);
+
+    client.stop();
+}
+
+unittest
+{
+    DanteClient client = new DanteClient(new UnixAddress("/tmp/renaissance.sock"));
+    client.start();
+
+    writeln("Waiting for channels...");
+    string[] channels = client.enumerateChannels();
+    writeln("Channels: ", channels);
 
     client.stop();
 }
