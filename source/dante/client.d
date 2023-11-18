@@ -8,6 +8,7 @@ import davinci;
 import tristanable;
 import guillotine;
 import guillotine.providers.sequential;
+import dante.exceptions;
 
 version(dbg)
 {
@@ -134,12 +135,74 @@ public class DanteClient
         return makeRequest(msg);
     }
 
+    public Future joinChannel_imp(string channelName)
+    {
+        import davinci.c2s.channels : ChannelMembership;
+        import davinci;
+        ChannelMembership chanMembershipReq = new ChannelMembership();
+        chanMembershipReq.join(channelName);
+
+        BaseMessage msg = new BaseMessage(MessageType.CLIENT_TO_SERVER, CommandType.MEMBERSHIP_JOIN, chanMembershipReq);
+
+        return makeRequest(msg);
+    }
+
+    public void joinChannel(string channelName)
+    {
+        import davinci.c2s.channels : ChannelMembership;
+        import davinci;
+        BaseMessage response = cast(BaseMessage)joinChannel_imp(channelName).await().getValue().value.object;
+
+        import std.stdio;
+        writeln("Hallo");
+        writeln("Hallo");
+        writeln("Hallo");
+        writeln("Hallo");
+        writeln("Hallo");
+        writeln("Hallo");
+        writeln("Hallo");
+        writeln("Hallo");
+        writeln("Hallo");
+
+        
+
+        // TODO: For absolute sanity we should check that
+        // ... it actually decoded to the type we EXPECT
+        // ... to be here (this would safeguard against
+        // ... bad server implementations)
+        // TODO: Make teh below a `mixin template`
+        ChannelMembership responseCommand = cast(ChannelMembership)response.getCommand();
+        
+        if(responseCommand is null)
+        {
+            throw ProtocolException.expectedMessageKind(ChannelMembership.classinfo, responseCommand);
+        }
+
+        if(responseCommand.wasGood())
+        {
+            return;
+        }
+        else
+        {
+            throw new CommandException("Could not join channel '"~channelName~"'");
+        }
+    }
+
     public string[] enumerateChannels(ulong offset, ubyte limit)
     {
         import davinci.c2s.channels : ChannelEnumerateReply;
         BaseMessage response = cast(BaseMessage)enumerateChannels_imp(offset, limit).await().getValue().value.object;
 
+        // TODO: For absolute sanity we should check that
+        // ... it actually decoded to the type we EXPECT
+        // ... to be here (this would safeguard against
+        // ... bad server implementations)
+        // TODO: Make teh below a `mixin template`
         ChannelEnumerateReply responseCommand = cast(ChannelEnumerateReply)response.getCommand();
+        if(responseCommand is null)
+        {
+            throw ProtocolException.expectedMessageKind(ChannelEnumerateReply.classinfo, responseCommand);
+        }
 
         return responseCommand.getChannels();
     }
@@ -262,6 +325,23 @@ unittest
     writeln("Waiting for channels...");
     string[] channels = client.enumerateChannels();
     writeln(dumpArray!(channels));
+
+    client.stop();
+}
+
+unittest
+{
+    DanteClient client = new DanteClient(new UnixAddress("/tmp/renaissance.sock"));
+    client.start();
+
+    writeln("Joining channel #general...");
+    client.joinChannel("#general");
+    writeln("Joined");
+
+    // string[] members = client.getMembers("#general");
+    
+    // client.leaveChannel("#general");
+
 
     client.stop();
 }
