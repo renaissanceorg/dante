@@ -164,21 +164,20 @@ public class DanteClient
         writeln("Hallo");
         writeln("Hallo");
 
-        
-
         // TODO: For absolute sanity we should check that
         // ... it actually decoded to the type we EXPECT
         // ... to be here (this would safeguard against
         // ... bad server implementations)
         // TODO: Make teh below a `mixin template`
-        ChannelMembership responseCommand = cast(ChannelMembership)response.getCommand();
+        Command responseCommand = response.getCommand();
+        ChannelMembership chanMemResp = cast(ChannelMembership)responseCommand;
         
-        if(responseCommand is null)
+        if(chanMemResp is null)
         {
             throw ProtocolException.expectedMessageKind(ChannelMembership.classinfo, responseCommand);
         }
 
-        if(responseCommand.wasGood())
+        if(chanMemResp.wasGood())
         {
             return;
         }
@@ -334,9 +333,17 @@ unittest
     DanteClient client = new DanteClient(new UnixAddress("/tmp/renaissance.sock"));
     client.start();
 
-    writeln("Joining channel #general...");
-    client.joinChannel("#general");
-    writeln("Joined");
+    try
+    {
+        writeln("Joining channel #general...");
+        client.joinChannel("#general");
+        writeln("Joined");
+    }
+    catch(DanteException e)
+    {
+        writeln("Got exception: ", e);
+    }
+    
 
     // string[] members = client.getMembers("#general");
     
