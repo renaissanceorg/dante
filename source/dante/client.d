@@ -153,17 +153,6 @@ public class DanteClient
         import davinci;
         BaseMessage response = cast(BaseMessage)joinChannel_imp(channelName).await().getValue().value.object;
 
-        import std.stdio;
-        writeln("Hallo");
-        writeln("Hallo");
-        writeln("Hallo");
-        writeln("Hallo");
-        writeln("Hallo");
-        writeln("Hallo");
-        writeln("Hallo");
-        writeln("Hallo");
-        writeln("Hallo");
-
         // TODO: For absolute sanity we should check that
         // ... it actually decoded to the type we EXPECT
         // ... to be here (this would safeguard against
@@ -184,6 +173,65 @@ public class DanteClient
         else
         {
             throw new CommandException("Could not join channel '"~channelName~"'");
+        }
+    }
+
+    public Future sendMessage_imp(string[] recipients, string message)
+    {
+        import davinci.c2s.channels : ChannelMessage;
+        import davinci;
+        ChannelMessage chanMessageReq = new ChannelMessage();
+        chanMessageReq.setTo(recipients);
+        chanMessageReq.setMessage(message);
+
+        BaseMessage msg = new BaseMessage(MessageType.CLIENT_TO_SERVER, CommandType.CHANNEL_SEND_MESSAGE, chanMessageReq);
+
+        return makeRequest(msg);
+    }
+
+    public Future sendMessage_imp0(string recipient, string message)
+    {
+        return sendMessage_imp([recipient], message);
+    }
+
+    public Future enumerateMembers_imp(string channelName)
+    {
+        import davinci.c2s.channels : ChannelMembership;
+        import davinci;
+        ChannelMembership chanMembershipListReq = new ChannelMembership();
+        chanMembershipListReq.list(channelName);
+
+        BaseMessage msg = new BaseMessage(MessageType.CLIENT_TO_SERVER, CommandType.MEMBERSHIP_LIST, chanMembershipListReq);
+
+        return makeRequest(msg);
+    }
+
+    public string[] getMembers(string channelName)
+    {
+        import davinci.c2s.channels : ChannelMembership;
+        import davinci;
+        BaseMessage response = cast(BaseMessage)enumerateMembers_imp(channelName).await().getValue().value.object;
+
+        // TODO: For absolute sanity we should check that
+        // ... it actually decoded to the type we EXPECT
+        // ... to be here (this would safeguard against
+        // ... bad server implementations)
+        // TODO: Make teh below a `mixin template`
+        Command responseCommand = response.getCommand();
+        ChannelMembership chanMemResp = cast(ChannelMembership)responseCommand;
+        
+        if(chanMemResp is null)
+        {
+            throw ProtocolException.expectedMessageKind(ChannelMembership.classinfo, responseCommand);
+        }
+
+        if(chanMemResp.wasGood())
+        {
+            return chanMemResp.getMembers();
+        }
+        else
+        {
+            throw new CommandException("Could not enumerate members of channel '"~channelName~"'");
         }
     }
 
@@ -345,10 +393,25 @@ unittest
     }
     
 
-    // string[] members = client.getMembers("#general");
-    
-    // client.leaveChannel("#general");
+    string[] members = client.getMembers("#general");
+    writeln(dumpArray!(members));
+    assert(members.length == 1);
+    // assert(members[0] == ) TODO: Add this once auth is implemented on server AND that we auth here prior to calling the join channel
 
+    // TODO: Send a message
+    client.sendMessage("#general", "Hallo there sexy ding");
+    
+    // try
+    // {
+    //     writeln("Leaving channel #general...");
+    //     client.leaveChannel("#general");
+    //     writeln("Left");
+    // }
+    // catch(DanteException e)
+    // {
+    //     writeln("Got exception: ", e);
+    // }
+    
 
     client.stop();
 }
