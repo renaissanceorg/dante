@@ -194,6 +194,41 @@ public class DanteClient
         return sendMessage_imp([recipient], message);
     }
 
+    public void sendMessage(string[] recipients, string message)
+    {
+        import davinci.c2s.channels : ChannelMessage;
+        import davinci;
+        BaseMessage response = cast(BaseMessage)sendMessage_imp(recipients, message).await().getValue().value.object;
+
+        // TODO: For absolute sanity we should check that
+        // ... it actually decoded to the type we EXPECT
+        // ... to be here (this would safeguard against
+        // ... bad server implementations)
+        // TODO: Make teh below a `mixin template`
+        Command responseCommand = response.getCommand();
+        ChannelMessage chanMemResp = cast(ChannelMessage)responseCommand;
+        
+        if(chanMemResp is null)
+        {
+            throw ProtocolException.expectedMessageKind(ChannelMessage.classinfo, responseCommand);
+        }
+
+        // TODO: Add checking here
+        // if(chanMemResp.wasGood())
+        // {
+        //     return chanMemResp.getMembers();
+        // }
+        // else
+        // {
+        //     throw new CommandException("Could not enumerate members of channel '"~channelName~"'");
+        // }
+    }
+
+    public void sendMessage(string recipient, string message)
+    {
+        sendMessage([recipient], message);
+    }
+
     public Future enumerateMembers_imp(string channelName)
     {
         import davinci.c2s.channels : ChannelMembership;
