@@ -183,6 +183,7 @@ public class DanteClient
         ChannelMessage chanMessageReq = new ChannelMessage();
         chanMessageReq.setTo(recipients);
         chanMessageReq.setMessage(message);
+        chanMessageReq.setFrom("FROM_PLACEHOLDER"); // This will be replaced by server but it MUST be filled else validation fails
 
         BaseMessage msg = new BaseMessage(MessageType.CLIENT_TO_SERVER, CommandType.CHANNEL_SEND_MESSAGE, chanMessageReq);
 
