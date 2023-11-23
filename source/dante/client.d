@@ -106,7 +106,7 @@ public class DanteClient
         return makeRequest(msg);
     }
 
-    public Future authenticate(string username, string password)
+    public Future authenticate_impl(string username, string password)
     {
         import davinci.c2s.auth;
         import davinci;
@@ -119,6 +119,28 @@ public class DanteClient
         // TODO: We should handle auth here for the user, instead of just returning a future?
 
         return makeRequest(msg);
+    }
+
+    public void authenticate(string username, string password)
+    {
+        import davinci.c2s.auth : AuthMessage;
+        import davinci;
+        BaseMessage response = cast(BaseMessage)authenticate_impl(username, password).await().getValue().value.object;
+
+        // TODO: For absolute sanity we should check that
+        // ... it actually decoded to the type we EXPECT
+        // ... to be here (this would safeguard against
+        // ... bad server implementations)
+        // TODO: Make teh below a `mixin template`
+        Command responseCommand = response.getCommand();
+        AuthMessage chanMemResp = cast(AuthMessage)responseCommand;
+        
+        if(chanMemResp is null)
+        {
+            throw ProtocolException.expectedMessageKind(AuthMessage.classinfo, responseCommand);
+        }
+
+        // TODO: Check authentication status here
     }
 
     public Future enumerateChannels_imp(ulong offset, ubyte limit)
@@ -385,7 +407,7 @@ unittest
     DanteClient client = new DanteClient(new UnixAddress("/tmp/renaissance.sock"));
     client.start();
 
-    Future fut = client.authenticate("deavmi", "testpassword");
+    Future fut = client.authenticate_impl("deavmi", "testpassword");
 
     writeln("Awaitinf future...");
     Result res = fut.await();
@@ -416,6 +438,17 @@ unittest
 {
     DanteClient client = new DanteClient(new UnixAddress("/tmp/renaissance.sock"));
     client.start();
+
+
+    try
+    {
+        client.authenticate("deavmi", "testpassword");
+    }
+    catch(DanteException e)
+    {
+        writeln("Got exception: ", e);
+    }
+  
 
     try
     {
